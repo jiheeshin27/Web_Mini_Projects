@@ -1,0 +1,16 @@
+{
+  "name": "to-do-list",
+  "version": "1.0.0",
+  "description": "- 투두리스트 구현 - json-server를 활용해서 로컬에 REST API 구축 및 연동 - 기본적인 데이터 처리인 생성, 읽기, 수정, 삭제(CRUD)를 구현",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db": "json-server --watch ./db.json --port 1234"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-server": "^0.17.0"
+  }
+}
