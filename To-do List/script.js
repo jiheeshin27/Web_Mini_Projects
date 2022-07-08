@@ -6,12 +6,8 @@
   }
 
   const $todos = get('.todos');
-  const $todoForm = get('.todo_form');
   const $todoInput = get('.todo_input');
   const $submitButton = get('.todo_submit_button');
-  const $contentButtons = get('.content_buttons');
-  const $editButtons = get('.edit_buttons');
-  const $editButton = get('.todo_edit_button');
 
   const createTodoElement = (item) => {
     const { id, content, completed } = item;
@@ -123,6 +119,50 @@
 
   }
 
+  const changeEditMode = (event) => {
+    const $item = event.target.closest('.item');
+    const $label = $item.querySelector('label');
+    const $editInput = $item.querySelector('input[type="text"]');
+    const $contentButtons = $item.querySelector('.content_buttons');
+    const $editButtons = $item.querySelector('.edit_buttons');
+    const value = $editInput.value;
+
+    if (event.target.className === 'todo_edit_button') {
+      $label.style.display = 'none';
+      $editInput.style.display = 'block';
+      $contentButtons.style.display = 'none';
+      $editButtons.style.display = 'block';
+      $editInput.focus();
+      $editInput.value = '';
+      $editInput.value = value;
+    }
+    if (event.target.className === 'todo_edit_cancel_button') {
+      $label.style.display = 'block';
+      $editInput.style.display = 'none';
+      $contentButtons.style.display = 'block';
+      $editButtons.style.display = 'none';
+      $editInput.value = $label.innerText;
+    }
+  }
+
+  const editTodo = (event) => {
+    if (event.target.className !== 'todo_edit_confirm_button') return;
+    const $item = event.target.closest('.item');
+    const $id = $item.dataset.id;
+    const $editInput = $item.querySelector('input[type="text"]');
+    const content = $editInput.value;
+    
+    fetch(`http://localhost:1234/todos/${$id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({content})
+    })
+      .then(getTodos)
+      .catch((err) => {console.log(err)})
+  }
+
   const init = () => {
     window.addEventListener('DOMContentLoaded', () => {
       getTodos();
@@ -130,6 +170,8 @@
     $submitButton.addEventListener('click', postTodo);
     $todos.addEventListener('click', deleteTodo);
     $todos.addEventListener('click', toggleTodo);
+    $todos.addEventListener('click', changeEditMode);
+    $todos.addEventListener('click', editTodo);
   }
   init()
 })()
