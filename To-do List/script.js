@@ -15,6 +15,7 @@
   const totalCount = 53; // 총 데이터의 개수 
   const pageCount = 5; // 화면에 나타날 페이지의 개수 
 
+  // 페이지네이션 
   const pagination = () => {
     let totalPage = Math.ceil(totalCount / limit); // 총 페이지 개수
     let pageGroup = Math.ceil(currentPage / pageCount); // 현재 페이지가 몇번째 그룹에 속해있는지 
@@ -61,7 +62,8 @@
       })
     })
   };
-
+  
+  // todo item 생성 
   const createTodoElement = (item) => {
     const { id, content, completed } = item;
     const $todoItem = document.createElement('div');
@@ -142,7 +144,6 @@
   }
 
   const deleteTodo = (event) => {
-    // event.preventDefault();
     if(event.target.className === "todo_remove_button") {
       const $item = event.target.closest('.item');
       const $id = $item.dataset.id;
