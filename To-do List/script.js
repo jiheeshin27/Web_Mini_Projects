@@ -8,6 +8,59 @@
   const $todos = get('.todos');
   const $todoInput = get('.todo_input');
   const $submitButton = get('.todo_submit_button');
+  const $pagination = get('.pagination');
+
+  const limit = 5; // 한 page에 나타낼 데이터의 개수
+  let currentPage = 1; // 현재 페이지
+  const totalCount = 53; // 총 데이터의 개수 
+  const pageCount = 5; // 화면에 나타날 페이지의 개수 
+
+  const pagination = () => {
+    let totalPage = Math.ceil(totalCount / limit); // 총 페이지 개수
+    let pageGroup = Math.ceil(currentPage / pageCount); // 현재 페이지가 몇번째 그룹에 속해있는지 
+    console.log(totalPage, pageGroup);
+
+    let lastNumber = pageGroup * pageCount; // 현재 페이지 그룹의 마지막 숫자
+    if (lastNumber > totalPage) {
+      lastNumber = totalPage;
+    }
+    let firstNumber = lastNumber - (pageCount - 1); // 현재 페이지 그룹의 첫번째 숫자 
+
+    const next = lastNumber + 1;
+    const prev = firstNumber - 1;
+
+    console.log({lastNumber, firstNumber, next, prev})
+
+    let html = ''
+    if (prev > 0) {
+      html += `<button class="prev" data-fn="prev">이전</button>`;
+    }
+    for (let i = firstNumber; i <= lastNumber; i++) {
+        html += `<button class="pageNumber" id="page_${i}">${i}</button>`;
+    }
+    if (lastNumber < totalPage) {
+        html += `<button class="next" data-fn="next">다음</button>`;
+    }
+    $pagination.innerHTML = html;
+
+    const $currentPageNumber = get(`.pageNumber#page_${currentPage}`);
+    $currentPageNumber.style.color = '#9dc0e9';
+
+    const $currentPageNumbers = document.querySelectorAll('.pagination button');
+    $currentPageNumbers.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset.fn === 'prev') {
+          currentPage = prev;
+        } else if (button.dataset.fn === 'next') {
+          currentPage = next;
+        } else {
+          currentPage = button.innerText;
+        }
+        pagination();
+        getTodos();
+      })
+    })
+  };
 
   const createTodoElement = (item) => {
     const { id, content, completed } = item;
@@ -45,9 +98,10 @@
     return $todoItem;
   }
 
+  // json server : paginate
   // 모든 todo 가져오고 렌더링
   const getTodos = () => {
-    fetch("http://localhost:1234/todos")
+    fetch(`http://localhost:1234/todos?_page=${currentPage}&_limit=${limit}`)
       .then((res) => res.json())
       .then((todos) => {renderAllTodos(todos)})
       .catch((err) => console.error(err))
@@ -166,6 +220,7 @@
   const init = () => {
     window.addEventListener('DOMContentLoaded', () => {
       getTodos();
+      pagination();
     });
     $submitButton.addEventListener('click', postTodo);
     $todos.addEventListener('click', deleteTodo);
